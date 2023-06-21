@@ -27,7 +27,7 @@ namespace mask {
 
 enum class MaskWithPreDefinedValues {
     Empty = 0,
-    OneAndTwo = mask::set_mask<MaskWithPreDefinedValues>(Element::One, Element::Two)
+    OneAndTwo = mask::combine(Element::One, Element::Two)
 };
 
 enum class MaskElemTogether {
@@ -65,11 +65,17 @@ TEST_CASE("set/contains with manual base", "[common]") {
 
 TEST_CASE("set/contains in one enum", "[common]") {
     constexpr const auto m1 = mask::set(MaskElemTogether::Empty, MaskElemTogether::Snd);
-    static_assert(mask::contains(m1, MaskElemTogether::Snd));
-    static_assert(!mask::contains(m1, MaskElemTogether::Fst));
+    REQUIRE(mask::contains(m1, MaskElemTogether::Snd));
+    REQUIRE(!mask::contains(m1, MaskElemTogether::Fst));
 }
 
-TEST_CASE("set_mask in constexpr", "[common]") {
+TEST_CASE("combine", "[common]") {
+    REQUIRE(mask::combine(Element::Zero) == 0b00000001);
+    REQUIRE(mask::combine(Element::One, Element::Two) == 0b00000110);
+    REQUIRE(mask::combine(Element::Two, Element::Zero) == 0b00000101);
+}
+
+TEST_CASE("combine in constexpr", "[common]") {
     static_assert(mask::contains(MaskWithPreDefinedValues::OneAndTwo, Element::One));
     static_assert(mask::contains(MaskWithPreDefinedValues::OneAndTwo, Element::Two));
     static_assert(!mask::contains(MaskWithPreDefinedValues::OneAndTwo, Element::Zero));
@@ -90,8 +96,7 @@ TEST_CASE("split in find", "[split]") {
 }
 
 TEST_CASE("split in transform and filter", "[split]") {
-    auto range = mask::split<Element>(MaskWithPreDefinedValues::OneAndTwo);
-    auto filtered = range 
+    auto filtered = mask::split<Element>(MaskWithPreDefinedValues::OneAndTwo)
         | std::views::filter([](auto el) { return el == Element::One; })
         | std::views::transform([](auto el) { return utl::to_underlying(el); });
     for (const auto i : filtered) {

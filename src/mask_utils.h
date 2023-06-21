@@ -48,11 +48,11 @@ namespace mask
         }
     }
 
-    template<utl::enum_type Mask, mask::base_defined<Mask>... Element>
-    constexpr Mask set_mask(Element... elems) {
-        Mask result = Mask{0};
-        ([&]() mutable { result = set(result, elems); }(), ...);
-        return result;
+    template<utl::enum_type ... Element>
+    constexpr int combine(Element... elems) {
+        int res{};
+        ([&]() { res |= (1 << utl::to_underlying(elems)); }(), ...);
+        return res;
     }
 
     template<utl::enum_type Mask, mask::base_defined<Mask> Element>
