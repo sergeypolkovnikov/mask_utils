@@ -11,7 +11,7 @@ mask |= 1; // set first flag to true
 const auto second_bit_set = (mask >> 1) & 1;
 ```
 
-will be transformed on the next
+might be transformed into the next one
 
 ```
 const auto mask = get_flags();
@@ -19,7 +19,7 @@ mask::set(mask, Flag::First);
 const auto second_bit_set = mask::contains(mask, Flag::Second);
 ```
 
-Another example is to split mask to the separated flags and handle it in range
+Another example is to split the mask to the separated flags and handle them in range
 
 ```
 enum class Compiler {
@@ -61,25 +61,25 @@ int main()
 
 ### set(MaskType mask, ElementType elem, ElementType base = mask::define_base<MaskType>()) -> MaskType
 
-Cast elem to underlying type (int by default) and do the following:
+Cast `elem` to the underlying type (int by default) and do the following:
 
 ```
 const auto new_mask_value = mask | (1 << (elem - base)) 
 ```
 
-It's UB when `elem - base` will be greater than size of undelying type of MaskType
+It's UB when `elem - base` is greater than the size of the undelying type of the MaskType
 
 ### contains(MaskType mask, ElementType elem, ElementType base = mask::define_base<MaskType>()) -> bool
 
-Cast elem to underlying type (int by default) and do the following:
+Cast `elem` to the underlying type (int by default) and do the following:
 
 ```
 const auto contains = mask >> (1 << (elem - base)) & 1;
 ```
 
-It's UB when `elem - base` will be greater than size of undelying type of MaskType
+It's UB when `elem - base` is greater than the size of the undelying type of the MaskType
 
 ### split(MaskType mask) -> mask::internal::range<MaskType, ElementType>
 
-Split the mask to the different elements. E.g. mask 0b00001011 will be splited to three elements (0, 1 and 3). The result is presented in range-like container (it sutisfies `std::range::range` concept requirements)
+Split the mask to different elements. E.g. mask 0b00001011 will be splited to three elements (0, 1 and 3). The result is presented in a range-like container (it sutisfies `std::range::range` concept requirements)
 
